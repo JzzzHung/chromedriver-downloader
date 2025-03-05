@@ -1,17 +1,16 @@
 from urllib.request import urlretrieve
 from zipfile import ZipFile
 import os
-import re
 import requests
 from bs4 import BeautifulSoup
 
 VERSION_TXT = 'version.txt'
 DST_PATH = './driver'
 DRIVER_ZIP = f'{DST_PATH}/win.zip'
+DRIVER_TMP = 'chromedriver-win64/chromedriver.exe'
 DRIVER_EXE = f'{DST_PATH}/chromedriver.exe'
-DRIVER_LICENSE = f'{DST_PATH}/LICENSE.chromedriver'
 DRIVER_ABS_PATH_TXT = f'{DST_PATH}/path.txt'
-CHROME_INDEX = 'https://chromedriver.chromium.org/downloads'
+CHROME_INDEX = 'https://googlechromelabs.github.io/chrome-for-testing'
 
 # make driver dir
 if not os.path.isdir(DST_PATH):
@@ -29,12 +28,11 @@ print('ver: ', local_ver)     # 87.0.4280.141
 print('driver is updating...')
 response = requests.get(CHROME_INDEX)
 soup = BeautifulSoup(response.text, 'lxml')
-tmp = soup.find('a', {'href': re.compile(main_ver)}).string    # 'ChromeDriver 87.0.4280.88'
+ver = soup.find('code').string    # '87.0.4280.88'
 
 # download driver zip
 print('driver is updating..')
-ver = tmp.split(' ')[-1]
-url = f'https://chromedriver.storage.googleapis.com/{ver}/chromedriver_win32.zip'
+url = f'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{ver}/win64/chromedriver-win64.zip'
 urlretrieve(url, DRIVER_ZIP)
 
 # delete old driver.exe
@@ -44,15 +42,12 @@ if os.path.isfile(DRIVER_EXE):
 
 # unzip
 with ZipFile(DRIVER_ZIP, 'r') as zf:
-    zf.extractall(path=DST_PATH)
+    zf.extract(DRIVER_TMP, path=DST_PATH)
 
-# create txt file that has driver absolute path
-# DRIVER_ABS_PATH = os.path.abspath(DRIVER_EXE)
-# with open(DRIVER_ABS_PATH_TXT, 'w') as file:
-#     file.write(DRIVER_ABS_PATH)
-#     print('create txt file that has driver absolute path.')
+# move chromedriver.exe to upper dir
+os.rename(f'{DST_PATH}/{DRIVER_TMP}', DRIVER_EXE)
 
 # remove zip
 os.remove(DRIVER_ZIP)
-os.remove(DRIVER_LICENSE)
+os.rmdir(f'{DST_PATH}/chromedriver-win64/')
 print('DONE!')
