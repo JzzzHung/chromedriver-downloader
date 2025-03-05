@@ -2,5 +2,8 @@
 Download chromedriver with python script.
 
 # Usage
-* Double click `RUN.bat`
-  * It will automatically create a `driver` folder. `chromedriver.exe` will be downloaded to `driver` folder.
+```cmd
+python main.py
+```
+
+* After execute `main.py`, it will automatically create a `driver` folder. `chromedriver.exe` will be downloaded to `driver` folder.

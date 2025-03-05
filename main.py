@@ -2,8 +2,8 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 import os
 import requests
+import subprocess
 
-VERSION_TXT = 'version.txt'
 DST_PATH = './driver'
 DRIVER_ZIP = f'{DST_PATH}/win.zip'
 DRIVER_TMP = 'chromedriver-win64/chromedriver.exe'
@@ -17,9 +17,8 @@ if not os.path.isdir(DST_PATH):
     os.mkdir(DST_PATH)
 
 # get chrome version
-with open(VERSION_TXT, encoding='utf-16') as file:
-    local_ver = file.read().strip().split('=')[-1]
-    main_ver = local_ver.split('.')[0]
+local_ver = subprocess.check_output('reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version').decode('utf-8', 'ignore').strip().split()[-1]
+main_ver = local_ver.split('.')[0]
 
 # get version of Chrome-Driver
 ver = requests.get(CHROME_QUERY + main_ver).text    # '87.0.4280.88'
